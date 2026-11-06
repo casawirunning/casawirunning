@@ -1,0 +1,6 @@
+{
+  "name": "Casawi Running — Urban Streetwear Drops",
+  "description": "Casablanca urban streetwear and athletic drops with instant WhatsApp order routing and trilingual support.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
