@@ -45,7 +45,7 @@ export const ShopSettingsModal: React.FC<ShopSettingsModalProps> = ({
   };
 
   const handleReset = () => {
-    setWhatsapp('+212 694-940173');
+    setWhatsapp('+212 681-031707');
     setTiktok('casawirunning1');
     onColorwayChange('hyper-blue');
   };

@@ -13,7 +13,8 @@ export function cleanWhatsAppNumber(rawPhone: string): string {
 export function generateWhatsAppMessage(
   items: CartItem[],
   customer: CustomerInfo,
-  totalMAD: number,
+  subtotalMAD: number,
+  shippingMAD: number,
   lang: Language,
   storeName: string
 ): string {
@@ -22,6 +23,7 @@ export function generateWhatsAppMessage(
     month: '2-digit',
     year: 'numeric',
   });
+  const grandTotalMAD = subtotalMAD + shippingMAD;
 
   if (lang === 'ar') {
     let msg = `🇲🇦 *طلب جديد من متجر ${storeName}*\n`;
@@ -48,8 +50,10 @@ export function generateWhatsAppMessage(
       msg += `   - السعر: ${item.product.priceMAD * item.quantity} درهم\n`;
     });
     msg += `\n----------------------------------------\n`;
-    msg += `💰 *المجموع الإجمالي:* *${totalMAD.toLocaleString()} درهم مغربي (MAD)*\n`;
-    msg += `🚚 *طريقة الدفع:* الدفع نقداً عند الاستلام (Cash on Delivery)\n`;
+    msg += `💵 *المجموع الفرعي:* ${subtotalMAD.toLocaleString()} درهم\n`;
+    msg += `🚚 *مصاريف التوصيل (${customer.city}):* ${shippingMAD} درهم\n`;
+    msg += `💰 *المجموع الإجمالي الواجب أداؤه:* *${grandTotalMAD.toLocaleString()} درهم مغربي (MAD)*\n`;
+    msg += `📦 *طريقة الدفع:* الدفع نقداً عند الاستلام (Cash on Delivery)\n`;
     msg += `----------------------------------------\n`;
     msg += `يرجى تأكيد الطلب للبدء في تجهيز الطرد للتوصيل. شكراً لك! 🙏`;
     return msg;
@@ -80,8 +84,10 @@ export function generateWhatsAppMessage(
       msg += `   - Price: ${item.product.priceMAD * item.quantity} MAD\n`;
     });
     msg += `\n----------------------------------------\n`;
-    msg += `💰 *TOTAL AMOUNT:* *${totalMAD.toLocaleString()} MAD*\n`;
-    msg += `🚚 *Payment Mode:* Cash on Delivery (COD)\n`;
+    msg += `💵 *Subtotal:* ${subtotalMAD.toLocaleString()} MAD\n`;
+    msg += `🚚 *Shipping (${customer.city}):* ${shippingMAD} MAD\n`;
+    msg += `💰 *GRAND TOTAL TO PAY:* *${grandTotalMAD.toLocaleString()} MAD*\n`;
+    msg += `📦 *Payment Mode:* Cash on Delivery (COD)\n`;
     msg += `----------------------------------------\n`;
     msg += `Please confirm this order to dispatch the parcel. Thank you! 🙏`;
     return msg;
@@ -112,8 +118,10 @@ export function generateWhatsAppMessage(
     msg += `   - Prix: ${item.product.priceMAD * item.quantity} MAD\n`;
   });
   msg += `\n----------------------------------------\n`;
-  msg += `💰 *TOTAL À PAYER:* *${totalMAD.toLocaleString()} MAD*\n`;
-  msg += `🚚 *Mode de Paiement:* Paiement Cash à la Livraison (COD)\n`;
+  msg += `💵 *Sous-total:* ${subtotalMAD.toLocaleString()} MAD\n`;
+  msg += `🚚 *Frais de livraison (${customer.city}):* ${shippingMAD} MAD\n`;
+  msg += `💰 *TOTAL À PAYER:* *${grandTotalMAD.toLocaleString()} MAD*\n`;
+  msg += `📦 *Mode de Paiement:* Paiement Cash à la Livraison (COD)\n`;
   msg += `----------------------------------------\n`;
   msg += `Merci de confirmer la commande pour préparer l'expédition du colis. 🙏`;
   return msg;

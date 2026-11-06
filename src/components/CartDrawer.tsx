@@ -180,16 +180,19 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   </div>
                   <div className="flex justify-between text-zinc-400">
                     <span>{t.cart.shipping}</span>
-                    <span className="text-emerald-400 font-medium">
-                      {subtotalMAD >= 500 ? t.cart.freeCasablanca : 'Livraison Partout au Maroc'}
+                    <span className="text-zinc-300 font-mono">
+                      20 MAD (Casa) · dès 25 MAD (Maroc)
                     </span>
                   </div>
                   <div className="pt-2 border-t border-white/[0.08] flex justify-between text-base font-extrabold text-white">
-                    <span>{t.cart.total}</span>
+                    <span>{t.cart.subtotal}</span>
                     <span className="font-mono text-lg tabular-nums font-black text-white">
                       {subtotalMAD.toLocaleString()} {t.catalog.priceMAD}
                     </span>
                   </div>
+                  <p className="text-[11px] text-zinc-500">
+                    + Frais de livraison calculés selon votre ville à l'étape suivante
+                  </p>
                 </div>
 
                 <button
