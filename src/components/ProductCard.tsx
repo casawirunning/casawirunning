@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Eye, Check } from 'lucide-react';
+import { ShoppingBag, Check } from 'lucide-react';
 import { Language, Product } from '../types';
 import { TRANSLATIONS } from '../data/translations';
 import { Colorway } from '../data/themes';
@@ -8,7 +8,6 @@ interface ProductCardProps {
   product: Product;
   lang: Language;
   colorway: Colorway;
-  onSelect: (product: Product) => void;
   onAddToCart: (product: Product, size: string, color: string) => void;
 }
 
@@ -16,7 +15,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   product,
   lang,
   colorway,
-  onSelect,
   onAddToCart,
 }) => {
   const t = TRANSLATIONS[lang];
@@ -24,8 +22,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const [isAddedRecently, setIsAddedRecently] = useState<boolean>(false);
   const [imageError, setImageError] = useState<boolean>(false);
 
-  const handleQuickAdd = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleQuickAdd = () => {
     const defaultColor = product.colors[0]?.hex || '#000000';
     onAddToCart(product, selectedSize, defaultColor);
     setIsAddedRecently(true);
@@ -33,10 +30,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   return (
-    <article
-      onClick={() => onSelect(product)}
-      className="group relative flex flex-col bg-[#0c0d11] hover:bg-[#111319] border border-white/[0.07] hover:border-white/[0.18] rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/70"
-    >
+    <article className="group relative flex flex-col bg-[#0c0d11] hover:bg-[#111319] border border-white/[0.07] hover:border-white/[0.18] rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-black/70">
       {/* Product Image Slot */}
       <div className="relative aspect-[4/3] w-full bg-[#08090c] overflow-hidden flex items-center justify-center p-2.5">
         {!imageError ? (
@@ -53,21 +47,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             <span className="text-xs mt-1" style={{ color: colorway.dotColor }}>Casawi Running</span>
           </div>
         )}
-
-
-        {/* Quick View Hover Indicator */}
-        <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 pointer-events-none">
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-black/90 text-xs font-bold text-white rounded-lg border border-white/10 shadow-xl backdrop-blur-sm">
-            <Eye className="w-3.5 h-3.5" style={{ color: colorway.dotColor }} />
-            <span>{t.catalog.viewDetails}</span>
-          </span>
-        </div>
       </div>
 
       {/* Card Body */}
       <div className="p-4 sm:p-5 flex flex-col flex-1 justify-between gap-3">
         <div>
-          {/* Brand & Stock Status (Unboxed inline text metadata) */}
+          {/* Brand & Stock Status */}
           <div className="flex items-center justify-between text-xs text-zinc-400 mb-1.5">
             <span className="font-mono uppercase tracking-wider text-[11px] text-zinc-400 font-semibold">{product.brand}</span>
             <span className="text-zinc-400 text-[11px] font-mono flex items-center gap-1.5">
@@ -80,7 +65,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
 
           {/* Product Title */}
-          <h3 className="text-sm sm:text-base font-bold text-white group-hover:text-zinc-100 transition-colors leading-snug line-clamp-1 font-display tracking-tight uppercase">
+          <h3 className="text-sm sm:text-base font-bold text-white leading-snug line-clamp-1 font-display tracking-tight uppercase">
             {product.name}
           </h3>
 
@@ -97,19 +82,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         </div>
 
-        {/* Size Selection & Quick Add */}
+        {/* Size Selection & Quick Add (All on the main card) */}
         <div className="pt-3 border-t border-white/[0.07] space-y-2.5">
           {/* Size Selector */}
-          <div
-            className="flex items-center gap-1.5 overflow-x-auto scrollbar-none"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
             {product.sizes.map((size) => (
               <button
                 key={size}
                 type="button"
                 onClick={() => setSelectedSize(size)}
-                className={`min-w-7 h-7 px-1.5 text-xs font-mono font-bold rounded-md flex items-center justify-center transition-all cursor-pointer ${
+                className={`min-w-8 h-8 px-2 text-xs font-mono font-bold rounded-md flex items-center justify-center transition-all cursor-pointer ${
                   selectedSize === size
                     ? 'text-white border'
                     : 'bg-white/[0.04] text-zinc-400 hover:text-white hover:bg-white/[0.08] border border-transparent'
@@ -135,20 +117,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               isAddedRecently
                 ? { backgroundColor: '#10B981', color: '#000000' }
                 : {
-                    backgroundColor: 'rgba(255, 255, 255, 0.06)',
-                    color: '#FFFFFF',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    backgroundColor: colorway.accent,
+                    color: colorway.accentText,
+                    boxShadow: `0 2px 10px ${colorway.glow}`,
                   }
             }
           >
             {isAddedRecently ? (
               <>
-                <Check className="w-3.5 h-3.5 stroke-[3]" />
+                <Check className="w-4 h-4 stroke-[3]" />
                 <span>{t.catalog.addedToCart}</span>
               </>
             ) : (
               <>
-                <ShoppingBag className="w-3.5 h-3.5" />
+                <ShoppingBag className="w-4 h-4" />
                 <span>{t.catalog.addToCart}</span>
               </>
             )}

@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Language, ProductCategory, Product, CartItem, StoreSettings } from './types';
+import { Language, Product, CartItem, StoreSettings } from './types';
 import { TRANSLATIONS } from './data/translations';
 import { INITIAL_PRODUCTS } from './data/products';
 import { COLORWAYS } from './data/themes';
 import { Navbar } from './components/Navbar';
 import { CategoryFilter } from './components/CategoryFilter';
 import { ProductCard } from './components/ProductCard';
-import { ProductModal } from './components/ProductModal';
 import { CartDrawer } from './components/CartDrawer';
 import { CheckoutModal } from './components/CheckoutModal';
 import { WhatsAppSuccessModal } from './components/WhatsAppSuccessModal';
@@ -57,12 +56,10 @@ export default function App() {
     return [];
   });
 
-  // Catalog filtering
-  const [selectedCategory, setSelectedCategory] = useState<ProductCategory>('all');
+  // Catalog search
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Modals & Drawers
-  const [activeProduct, setActiveProduct] = useState<Product | null>(null);
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState<boolean>(false);
 
@@ -98,7 +95,7 @@ export default function App() {
     }
   }, [cartItems]);
 
-  // Add Item to Cart
+  // Add Item to Cart directly from card
   const handleAddToCart = (
     product: Product,
     selectedSize: string,
@@ -162,24 +159,17 @@ export default function App() {
     });
   };
 
-  // Filtered Products
+  // Filtered Products (All drops + search)
   const filteredProducts = useMemo(() => {
+    if (!searchQuery.trim()) return INITIAL_PRODUCTS;
+    const query = searchQuery.toLowerCase().trim();
     return INITIAL_PRODUCTS.filter((product) => {
-      // Category filter
-      if (selectedCategory !== 'all' && product.category !== selectedCategory) {
-        return false;
-      }
-      // Search filter
-      if (searchQuery.trim()) {
-        const query = searchQuery.toLowerCase().trim();
-        const matchesName = product.name.toLowerCase().includes(query);
-        const matchesBrand = product.brand.toLowerCase().includes(query);
-        const matchesDesc = product.description[lang].toLowerCase().includes(query);
-        return matchesName || matchesBrand || matchesDesc;
-      }
-      return true;
+      const matchesName = product.name.toLowerCase().includes(query);
+      const matchesBrand = product.brand.toLowerCase().includes(query);
+      const matchesDesc = product.description[lang].toLowerCase().includes(query);
+      return matchesName || matchesBrand || matchesDesc;
     });
-  }, [selectedCategory, searchQuery, lang]);
+  }, [searchQuery, lang]);
 
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
   const t = TRANSLATIONS[lang];
@@ -243,15 +233,13 @@ export default function App() {
         {/* Filters & Search */}
         <CategoryFilter
           lang={lang}
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           resultsCount={filteredProducts.length}
           colorway={colorway}
         />
 
-        {/* Product Cards Grid (3 columns desktop, 2 tablet, 1 mobile) */}
+        {/* Product Cards Grid */}
         {filteredProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {filteredProducts.map((product) => (
@@ -260,7 +248,6 @@ export default function App() {
                 product={product}
                 lang={lang}
                 colorway={colorway}
-                onSelect={setActiveProduct}
                 onAddToCart={handleAddToCart}
               />
             ))}
@@ -271,10 +258,7 @@ export default function App() {
               {t.catalog.noResults}
             </p>
             <button
-              onClick={() => {
-                setSearchQuery('');
-                setSelectedCategory('all');
-              }}
+              onClick={() => setSearchQuery('')}
               className="px-5 py-2.5 text-xs font-bold uppercase rounded-lg transition-all cursor-pointer"
               style={{
                 backgroundColor: colorway.accent,
@@ -292,18 +276,6 @@ export default function App() {
         lang={lang}
         settings={settings}
         colorway={colorway}
-      />
-
-      {/* Product Details Modal */}
-      <ProductModal
-        product={activeProduct}
-        lang={lang}
-        colorway={colorway}
-        onClose={() => setActiveProduct(null)}
-        onAddToCart={(product, size, color, qty) => {
-          handleAddToCart(product, size, color, qty);
-          setIsCartOpen(true);
-        }}
       />
 
       {/* Slide-over Cart Drawer */}
